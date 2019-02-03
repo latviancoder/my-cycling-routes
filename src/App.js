@@ -3,8 +3,8 @@ import { Global } from '@emotion/core';
 import Spinner from 'react-md-spinner';
 
 import Sidebar from './sidebar/Sidebar';
-import { getRoutes } from './fakeAPI';
-import { useFetcher } from './helpers';
+import { getRoutes } from './misc/fakeAPI';
+import { useFetcher } from './misc/helpers';
 import * as Styled from './styled';
 
 const Details = lazy(() => import('./details/Details'));

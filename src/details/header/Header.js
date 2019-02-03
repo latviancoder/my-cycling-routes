@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { useDetailsContext } from '../Details';
-import { secondsToHm } from '../../helpers';
+import { secondsToHm } from '../../misc/helpers';
 
 const StyledContainer = styled.div`
   flex: 0 0 50px;

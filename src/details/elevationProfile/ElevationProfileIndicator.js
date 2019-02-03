@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { max } from 'd3';
 
 import { useDetailsContext } from '../Details';
-import { getSlopeColor } from '../../helpers';
+import { getSlopeColor } from '../../misc/helpers';
 
 const StyledLine = styled.div`
   position: absolute;

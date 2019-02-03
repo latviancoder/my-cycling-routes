@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { getSlopeColor } from '../../helpers';
+import { getSlopeColor } from '../../misc/helpers';
 
 const ElevationProfileGradient = memo(
   function({ route, xScale }) {

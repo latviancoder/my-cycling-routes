@@ -1,7 +1,7 @@
 import React, { createContext, useReducer, useContext, useEffect } from 'react';
 
-import { getRoute } from '../fakeAPI';
-import { convertGpxToJson, useFetcher } from '../helpers';
+import { getRoute } from '../misc/fakeAPI';
+import { convertGpxToJson, useFetcher } from '../misc/helpers';
 import Map from './map/Map';
 import ElevationProfile from './elevationProfile/ElevationProfile';
 import Header from './header/Header';
