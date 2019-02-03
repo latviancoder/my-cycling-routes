@@ -12,16 +12,20 @@ export default function Indicator({ parentWidth, ratioTop, ratioLeft }) {
   const { distance, elevation, slope } = state.indicator;
   const maxDistance = max(state.selectedRoute.route, d => d.distance);
 
+  // Calculate left offset in pixels
   let offset = distance * parentWidth / maxDistance;
   let minusOffset = 0;
 
   if (boxRef.current) {
     const boxWidth = boxRef.current.getBoundingClientRect().width;
+    // If there is not enough place on the right side of indicator, move box to the left
     if (parentWidth - offset < boxWidth) {
       minusOffset = boxWidth;
     }
   }
 
+  // 'translate' is more performant than 'left'
+  // https://www.html5rocks.com/en/tutorials/speed/high-performance-animations/
   return <>
     <Styled.Line
       ratioTop={ratioTop}

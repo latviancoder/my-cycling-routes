@@ -134,6 +134,7 @@ export default function ElevationProfile() {
       />
     )}
 
+    {/* Instead of using d3.append we can just use React */}
     <svg
       viewBox={`0 0 ${svgWidth} ${svgHeight}`}
       style={{ display: 'block' }}
