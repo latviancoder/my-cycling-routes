@@ -7,6 +7,7 @@ import ElevationProfile from './elevationProfile/ElevationProfile';
 import Header from './header/Header';
 import * as Styled from './styled';
 
+// Instead of prop drilling our state and dispatch it's easier to create context
 const DetailsContext = createContext(null);
 
 export function useDetailsContext() {
@@ -58,6 +59,7 @@ export default function Details({ id }) {
     }
   }, [routeGpx]);
 
+  // All children will have access to state and dispatch
   return <DetailsContext.Provider value={[state, dispatch]}>
     <Styled.Container>
       <Styled.Shadow/>

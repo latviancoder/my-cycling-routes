@@ -9,9 +9,11 @@ export function convertGpxToJson(routeGpx) {
     return;
   }
 
+  // Convert GPX XML to GeoJSON
   const parsed = new DOMParser().parseFromString(routeGpx, "application/xml");
   const converted = gpx(parsed);
 
+  // Combine two arrays into one
   let route = zipWith(
     converted.features[0].geometry.coordinates,
     converted.features[0].properties.coordTimes,
@@ -25,6 +27,8 @@ export function convertGpxToJson(routeGpx) {
       }
     }
   );
+
+  // Calculate additional information about route and each route point, for example distance and slope
 
   const totalTime = differenceInSeconds(
     new Date(route[route.length - 1].time),
@@ -46,6 +50,7 @@ export function convertGpxToJson(routeGpx) {
       longitude: route[i + 1].lon
     };
 
+    // Haversine formula determines distance between two points based on their coordinates
     totalDistance += haversine(start, end);
     route[i + 1].distance = totalDistance;
 
@@ -70,6 +75,7 @@ export function convertGpxToJson(routeGpx) {
   }
 }
 
+// Naive custom hook for fetching stuff
 export function useFetcher(fetchSomethingAPI, inputs) {
   const [data, setData] = useState();
   const [isFetching, setIsFetching] = useState();

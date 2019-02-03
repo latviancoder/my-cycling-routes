@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useMemo } from 'react';
-import styled from '@emotion/styled';
 import {
   min,
   max,
@@ -14,31 +13,12 @@ import {
   bisector,
   extent
 } from 'd3';
-import ElevationProfileIndicator from './ElevationProfileIndicator';
+
+import Indicator from './indicator/Indicator';
 import { useDetailsContext } from '../Details';
-import ElevationProfileGradient from './ElevationProfileGradient';
-import ElevationProfileGraph from './ElevationProfileGraph';
-
-const StyledAxis = styled.g`
-  fill: #fff;
-  line {
-    stroke: #b5b5b5;
-  }
-  
-  path {
-    stroke: #b5b5b5;
-  }
-  
-  text {
-    fill: #b5b5b5;
-  }  
-`;
-
-const StyledContainer = styled.div`
-  flex: 0 0 100px;
-  position: relative;
-  cursor: crosshair;
-`;
+import Gradient from './Gradient';
+import Graph from './Graph';
+import * as Styled from './styled';
 
 const svgWidth = 600;
 const svgHeight = 160;
@@ -58,6 +38,7 @@ export default function ElevationProfile() {
 
   const { route } = state.selectedRoute;
 
+  // Every scale has range and domain
   const xScale = scaleLinear()
     .range([0, graphWidth])
     .domain(extent(route, d => d.distance));
@@ -68,6 +49,10 @@ export default function ElevationProfile() {
       min(route, d => d.elevation - 10),
       max(route, d => d.elevation),
     ]);
+
+  // This component gets re-rendered pretty often because of <Indicator> animation on mousemove
+  // Computations below are pretty costly and we want to wrap them with useMemo
+  // Otherwise these will be called on every render and noticeably reduce rendering performance
 
   const elevationLine = useMemo(() => {
     return line()
@@ -96,6 +81,8 @@ export default function ElevationProfile() {
     }
   }, [elevationArea, route]);
 
+  // When using d3 with react it's not possible to do everything declaratively
+  // Shirley Wu did a nice talk about this: https://www.youtube.com/watch?v=zXBdNDnqV2Q
   useEffect(() => {
     if (xAxis.current) {
       select(xAxis.current).call(
@@ -114,15 +101,17 @@ export default function ElevationProfile() {
     }
   }, []);
 
+  // Change indicator position on mousemove
   useEffect(() => {
     if (rectRef.current) {
       select(rectRef.current)
         .on('mousemove', null)
         .on('mousemove', function() {
+          // Get distance which corresponds to current mouse X position
           const relativeX = mouse(this)[0];
           const distanceForThisX = xScale.invert(relativeX);
 
-          // magic
+          // Get an actual point from our data array based on distance
           let i = bisectDistance(route, distanceForThisX, 1),
             p0 = route[i - 1],
             p1 = route[i],
@@ -136,9 +125,9 @@ export default function ElevationProfile() {
     }
   }, [route]);
 
-  return <StyledContainer>
+  return <Styled.Container>
     {state.isIndicatorVisible && state.indicator && (
-      <ElevationProfileIndicator
+      <Indicator
         parentWidth={rectRef.current.getBoundingClientRect().width}
         ratioTop={margin.top / svgHeight}
         ratioLeft={margin.left / svgWidth}
@@ -149,20 +138,15 @@ export default function ElevationProfile() {
       viewBox={`0 0 ${svgWidth} ${svgHeight}`}
       style={{ display: 'block' }}
     >
-      <ElevationProfileGradient
-        route={route}
-        xScale={xScale}
-      />
+      <Gradient route={route} xScale={xScale}/>
 
       <g transform={`translate(${margin.left} ${margin.top})`}>
-        <ElevationProfileGraph
-          pathLine={pathLine}
-          pathArea={pathArea}
-        />
+        <Graph pathLine={pathLine} pathArea={pathArea}/>
 
-        <StyledAxis ref={xAxis} transform={`translate(0 ${graphHeight})`}/>
-        <StyledAxis ref={yAxis}/>
+        <Styled.Axis ref={xAxis} transform={`translate(0 ${graphHeight})`}/>
+        <Styled.Axis ref={yAxis}/>
 
+        {/* Transparent overlay on top of graph which is going to register our mouse events */}
         <rect
           ref={rectRef}
           width={graphWidth}
@@ -173,5 +157,5 @@ export default function ElevationProfile() {
         />
       </g>
     </svg>
-  </StyledContainer>;
+  </Styled.Container>;
 }

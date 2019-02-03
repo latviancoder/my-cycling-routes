@@ -13,6 +13,7 @@ export default function Map() {
   const positionMarkerRef = useRef();
 
   // Initialize map and marker on initial mount
+  // We don't want to redraw map when route changes
   useEffect(() => {
     mapRef.current = L.map('map', {
       zoomControl: false,
@@ -32,11 +33,11 @@ export default function Map() {
   useEffect(() => {
     if (state.selectedRoute) {
       const { route } = state.selectedRoute;
+
+      // sphere-knn provides fast nearest-neighbor lookups for geographic points
       const routeLookup = sphereKnn(route);
 
-      const latlngs = [
-        route.map(e => [e.lat, e.lon])
-      ];
+      const latlngs = [route.map(e => [e.lat, e.lon])];
 
       // Draw two polylines
       routeRef.current = [
@@ -56,7 +57,7 @@ export default function Map() {
 
       // Show marker/indicator when moving cursor over route
       mapRef.current
-        // Unsubscribe to prevent memory leaks
+      // Unsubscribe to prevent memory leaks
         .off('mousemove')
         .off('mouseout')
         .on('mouseout', () => dispatch({ type: 'HIDE_INDICATOR' }))

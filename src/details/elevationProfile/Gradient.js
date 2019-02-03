@@ -1,10 +1,11 @@
 import React, { memo } from 'react';
 import { getSlopeColor } from '../../misc/helpers';
 
-const ElevationProfileGradient = memo(
+// Not wrapping this with memo will result in performance problems
+const Gradient = memo(
   function({ route, xScale }) {
     return <defs>
-      <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <linearGradient id="slopeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
         {route.map((point, index) => {
           const slopeColor = getSlopeColor(point.slope);
           
@@ -18,8 +19,9 @@ const ElevationProfileGradient = memo(
     </defs>;
   },
   function(prevProps, nextProps) {
+    // todo this comparator is bad, what if two routes have the same lengths?
     return (prevProps.route.length === nextProps.route.length);
   }
 );
 
-export default ElevationProfileGradient;
+export default Gradient;
