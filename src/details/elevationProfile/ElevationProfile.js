@@ -19,6 +19,7 @@ import { useDetailsContext } from '../Details';
 import Gradient from './Gradient';
 import Graph from './Graph';
 import * as Styled from './styled';
+import { getSlopeColor } from '../../misc/helpers';
 
 const svgWidth = 600;
 const svgHeight = 160;
@@ -39,9 +40,11 @@ export default function ElevationProfile() {
   const { route } = state.selectedRoute;
 
   // Every scale has range and domain
-  const xScale = scaleLinear()
-    .range([0, graphWidth])
-    .domain(extent(route, d => d.distance));
+  const xScale = useMemo(() => {
+    return scaleLinear()
+      .range([0, graphWidth])
+      .domain(extent(route, d => d.distance));
+  }, [route])
 
   const yScale = scaleLinear()
     .range([graphHeight, 0])
@@ -54,32 +57,20 @@ export default function ElevationProfile() {
   // Computations below are pretty costly and we want to wrap them with useMemo
   // Otherwise these will be called on every render and noticeably reduce rendering performance
 
-  const elevationLine = useMemo(() => {
-    return line()
-      .curve(curveCatmullRom.alpha(1))
-      .x(d => xScale(d.distance))
-      .y(d => yScale(d.elevation));
-  }, [route]);
+  const elevationLine = line()
+    .curve(curveCatmullRom.alpha(1))
+    .x(d => xScale(d.distance))
+    .y(d => yScale(d.elevation));
 
-  const elevationArea = useMemo(() => {
-    return area()
-      .curve(curveCatmullRom.alpha(1))
-      .x(d => xScale(d.distance))
-      .y0(graphHeight)
-      .y1(d => yScale(d.elevation));
-  }, [route]);
+  const elevationArea = area()
+    .curve(curveCatmullRom.alpha(1))
+    .x(d => xScale(d.distance))
+    .y0(graphHeight)
+    .y1(d => yScale(d.elevation));
 
-  const pathLine = useMemo(() => {
-    if (elevationLine && route) {
-      return elevationLine(route);
-    }
-  }, [elevationLine, route]);
+  const pathLine = elevationLine(route);
 
-  const pathArea = useMemo(() => {
-    if (elevationArea && route) {
-      return elevationArea(route);
-    }
-  }, [elevationArea, route]);
+  const pathArea = elevationArea(route);
 
   // When using d3 with react it's not possible to do everything declaratively
   // Shirley Wu did a nice talk about this: https://www.youtube.com/watch?v=zXBdNDnqV2Q
@@ -139,10 +130,11 @@ export default function ElevationProfile() {
       viewBox={`0 0 ${svgWidth} ${svgHeight}`}
       style={{ display: 'block' }}
     >
-      <Gradient route={route} xScale={xScale}/>
+      <Gradient xScale={xScale} route={route}/>
 
       <g transform={`translate(${margin.left} ${margin.top})`}>
-        <Graph pathLine={pathLine} pathArea={pathArea}/>
+        <path d={pathLine} stroke="url(#slopeGradient)" strokeWidth="8" fill="none"/>
+        <path d={pathArea} fill="#383838"/>
 
         <Styled.Axis ref={xAxis} transform={`translate(0 ${graphHeight})`}/>
         <Styled.Axis ref={yAxis}/>

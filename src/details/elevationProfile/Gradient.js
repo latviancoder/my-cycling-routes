@@ -1,27 +1,20 @@
 import React, { memo } from 'react';
 import { getSlopeColor } from '../../misc/helpers';
 
-// Not wrapping this with memo will result in performance problems
-const Gradient = memo(
-  function({ route, xScale }) {
-    return <defs>
-      <linearGradient id="slopeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-        {route.map((point, index) => {
-          const slopeColor = getSlopeColor(point.slope);
-          
-          return <stop
-            key={index}
-            offset={`${xScale(point.distance) * 100 / 500}%`}
-            style={{ stopColor: slopeColor, stopOpacity: 1 }}
-          />;
-        })}
-      </linearGradient>
-    </defs>;
-  },
-  function(prevProps, nextProps) {
-    // todo this comparator is bad, what if two routes have the same lengths?
-    return (prevProps.route.length === nextProps.route.length);
-  }
-);
+const Gradient = function({ route, xScale }) {
+  return <defs>
+    <linearGradient id="slopeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      {route.map((point, index) => {
+        const slopeColor = getSlopeColor(point.slope);
+
+        return <stop
+          key={index}
+          offset={`${xScale(point.distance) * 100 / 500}%`}
+          style={{ stopColor: slopeColor, stopOpacity: 1 }}
+        />;
+      })}
+    </linearGradient>
+  </defs>;
+};
 
 export default Gradient;
