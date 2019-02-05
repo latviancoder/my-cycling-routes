@@ -17,10 +17,6 @@ const Gradient = memo(
         })}
       </linearGradient>
     </defs>;
-  },
-  function(prevProps, nextProps) {
-    // todo this comparator is bad, what if two routes have the same lengths?
-    return (prevProps.route.length === nextProps.route.length);
   }
 );
 

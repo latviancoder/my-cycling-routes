@@ -39,9 +39,11 @@ export default function ElevationProfile() {
   const { route } = state.selectedRoute;
 
   // Every scale has range and domain
-  const xScale = scaleLinear()
-    .range([0, graphWidth])
-    .domain(extent(route, d => d.distance));
+  const xScale = useMemo(() => {
+    return scaleLinear()
+      .range([0, graphWidth])
+      .domain(extent(route, d => d.distance));
+  }, [route]);
 
   const yScale = scaleLinear()
     .range([graphHeight, 0])
