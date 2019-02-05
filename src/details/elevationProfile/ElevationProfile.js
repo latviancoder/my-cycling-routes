@@ -40,11 +40,9 @@ export default function ElevationProfile() {
   const { route } = state.selectedRoute;
 
   // Every scale has range and domain
-  const xScale = useMemo(() => {
-    return scaleLinear()
-      .range([0, graphWidth])
-      .domain(extent(route, d => d.distance));
-  }, [route])
+  const xScale = scaleLinear()
+    .range([0, graphWidth])
+    .domain(extent(route, d => d.distance));
 
   const yScale = scaleLinear()
     .range([graphHeight, 0])
@@ -125,12 +123,24 @@ export default function ElevationProfile() {
       />
     )}
 
-    {/* Instead of using d3.append we can just use React */}
+    {/*Instead of using d3.append we can just use React */}
     <svg
       viewBox={`0 0 ${svgWidth} ${svgHeight}`}
       style={{ display: 'block' }}
     >
-      <Gradient xScale={xScale} route={route}/>
+      <defs>
+        <linearGradient id="slopeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          {route.map((point, index) => {
+            const slopeColor = getSlopeColor(point.slope);
+
+            return <stop
+              key={index}
+              offset={`${xScale(point.distance) * 100 / 500}%`}
+              style={{ stopColor: slopeColor, stopOpacity: 1 }}
+            />;
+          })}
+        </linearGradient>
+      </defs>
 
       <g transform={`translate(${margin.left} ${margin.top})`}>
         <path d={pathLine} stroke="url(#slopeGradient)" strokeWidth="8" fill="none"/>
