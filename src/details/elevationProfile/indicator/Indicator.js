@@ -30,14 +30,14 @@ export default function Indicator({ parentWidth, ratioTop, ratioLeft }) {
     <Styled.Line
       ratioTop={ratioTop}
       ratioLeft={ratioLeft}
-      style={{ transform: `translatex(${offset}px)` }}
+      style={{ transform: `translate3D(${offset}px, 0, 0)` }}
     />
 
     <Styled.Box
       ref={boxRef}
       ratioTop={ratioTop}
       ratioLeft={ratioLeft}
-      style={{ transform: `translateX(${offset - (minusOffset ? minusOffset + 10 : -10)}px)` }}
+      style={{ transform: `translate3D(${offset - (minusOffset ? minusOffset + 10 : -10)}px, 0, 0)` }}
     >
       {Math.round(distance)}km
       / {Math.round(elevation)}m
