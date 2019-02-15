@@ -101,7 +101,7 @@ export default function ElevationProfile() {
           .tickFormat(d => `${d}m`)
       );
     }
-  }, []);
+  }, [route]);
 
   // Change indicator position on mousemove
   useEffect(() => {
